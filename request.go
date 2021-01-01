@@ -31,6 +31,10 @@ func Request(ctx context.Context) *resty.Request {
 	return httpClient.R().SetContext(ctx)
 }
 
+func RequestWithTimeout(ctx context.Context, timeout time.Duration) *resty.Request {
+	return httpClient.SetTimeout(timeout).R().SetContext(ctx)
+}
+
 func DecodeResponse(resp *resty.Response) ([]byte, error) {
 	var body struct {
 		Error
