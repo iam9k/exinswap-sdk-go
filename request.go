@@ -35,7 +35,7 @@ func RequestWithTimeout(ctx context.Context, timeout time.Duration) *resty.Reque
 	return httpClient.SetTimeout(timeout).R().SetContext(ctx)
 }
 
-func DecodeResponse(resp *resty.Response) ([]byte, error) {
+func DecodeResponse(resp *resty.Response) ([]byte, int64, error) {
 	var body struct {
 		Error
 		Data        json.RawMessage `json:"data,omitempty"`
@@ -47,29 +47,29 @@ func DecodeResponse(resp *resty.Response) ([]byte, error) {
 
 	if err := json.Unmarshal(resp.Body(), &body); err != nil {
 		if resp.IsError() {
-			return nil, &Error{
+			return nil, 0, &Error{
 				Code: resp.StatusCode(),
 				Msg:  resp.Status(),
 			}
 		}
-		return nil, err
+		return nil, 0, err
 	}
 
 	if body.Error.Code > 0 {
-		return nil, &body.Error
+		return nil, 0, &body.Error
 	}
-	return body.Data, nil
+	return body.Data, body.TimestampMs, nil
 }
 
-func UnmarshalResponse(resp *resty.Response, v interface{}) error {
-	data, err := DecodeResponse(resp)
+func UnmarshalResponse(resp *resty.Response, v interface{}) (timestampMs int64, err error) {
+	data, timestampMs, err := DecodeResponse(resp)
 	if err != nil {
-		return err
+		return timestampMs, err
 	}
 
 	if v != nil {
-		return json.Unmarshal(data, v)
+		return timestampMs, json.Unmarshal(data, v)
 	}
 
-	return nil
+	return timestampMs, nil
 }
