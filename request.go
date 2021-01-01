@@ -38,10 +38,11 @@ func RequestWithTimeout(ctx context.Context, timeout time.Duration) *resty.Reque
 func DecodeResponse(resp *resty.Response) ([]byte, error) {
 	var body struct {
 		Error
-		Data    json.RawMessage `json:"data,omitempty"`
-		Code    int             `json:"code,omitempty"`
-		Success bool            `json:"success,omitempty"`
-		Message string          `json:"message,omitempty"`
+		Data        json.RawMessage `json:"data,omitempty"`
+		Code        int             `json:"code,omitempty"`
+		Success     bool            `json:"success,omitempty"`
+		Message     string          `json:"message,omitempty"`
+		TimestampMs int64           `json:"timestampMs,omitempty"`
 	}
 
 	if err := json.Unmarshal(resp.Body(), &body); err != nil {
