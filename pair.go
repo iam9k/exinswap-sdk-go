@@ -36,16 +36,15 @@ type Pair struct {
 	UpdatedAt               int             `json:"updatedAt,omitempty"`
 }
 
-func ReadPairs() ([]*Pair, error) {
+func ReadPairs() (pairs []*Pair, timestampMs int64, err error) {
 	uri := "/pairs"
 	resp, err := Request(context.Background()).Get(uri)
 	if err != nil {
-		return nil, err
+		return nil, 0, err
 	}
 
-	pairs := []*Pair{}
-	if err := UnmarshalResponse(resp, &pairs); err != nil {
-		return nil, err
+	if timestampMs, err = UnmarshalResponse(resp, &pairs); err != nil {
+		return nil, timestampMs, err
 	}
-	return pairs, nil
+	return pairs, timestampMs, nil
 }
