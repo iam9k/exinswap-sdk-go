@@ -27,12 +27,12 @@ var httpClient = resty.New().
 	SetHostURL(Endpoint).
 	SetTimeout(300 * time.Millisecond)
 
-func Request(ctx context.Context) *resty.Request {
-	return httpClient.R().SetContext(ctx)
+func SetTimeout(timeout time.Duration) {
+	httpClient.SetTimeout(timeout)
 }
 
-func RequestWithTimeout(ctx context.Context, timeout time.Duration) *resty.Request {
-	return httpClient.SetTimeout(timeout).R().SetContext(ctx)
+func Request(ctx context.Context) *resty.Request {
+	return httpClient.R().SetContext(ctx)
 }
 
 func DecodeResponse(resp *resty.Response) ([]byte, int64, error) {
